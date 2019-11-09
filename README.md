@@ -1,3 +1,3 @@
 # ADPOS
 
-### Small POS of invoice generation for Car Dealers
+### Small POS for invoice generation for Car Dealers
