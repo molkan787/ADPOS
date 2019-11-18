@@ -5,11 +5,53 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="icon" href="<%= BASE_URL %>favicon.ico">
-    <title>adpos</title>
+    <title>AVANTI DEALER POINT OF SALE (ADPOS) CREATED BY JIMMY GEORGIADIS</title>
+    <link rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900">
+    <link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@mdi/font@latest/css/materialdesignicons.min.css">
+    <script>
+      window.onkeypress = function(e) {
+        if (e.keyCode == 13) {
+          event.preventDefault();
+          const currentNode = event.target;
+          if(currentNode.nextInput){
+            currentNode.nextInput.focus();
+          }else{
+            const allElements = document.querySelectorAll('input');
+            const currentIndex = [...allElements].findIndex(el => currentNode.isEqualNode(el));
+            const el = allElements[currentIndex + 1];
+            if(el) el.focus();
+          }
+        }else if(e.keyCode == 123){
+          const currentWindow = require('electron').remote.getCurrentWindow()
+          currentWindow.openDevTools()
+        }
+      }
+      window.req = name => require(name);
+      
+      window.quit = function (){
+          if(typeof window.beforeQuit == 'function')  window.beforeQuit();
+          window.onbeforeunload = null;
+          require('electron').remote.app.quit();
+      }
+      window.onbeforeunload = async function (event) {
+          const message = 'Are you sure you want quit the app?';
+          
+          const resp = await confirm(message);
+
+          if(resp){
+              window.quit();
+          }
+          
+          return message;
+      };
+    </script>
   </head>
   <body>
     <noscript>
-      <strong>We're sorry but adpos doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
+      <strong>We're sorry but adpos doesn't work properly without JavaScript
+        enabled. Please enable it to continue.</strong>
     </noscript>
     <div id="app"></div>
     <!-- built files will be auto injected -->

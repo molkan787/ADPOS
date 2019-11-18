@@ -1,6 +1,7 @@
 <template>
     <div>
-        {{txt}}
+        <v-btn color="primary">Primary</v-btn>
+        <input type="text" autocapitalize="true">
     </div>
 </template>
 
