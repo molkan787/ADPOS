@@ -4,6 +4,7 @@
         <v-card-title class="headline">Add new User</v-card-title>
         <hr>
         <v-card-text>
+            <v-select v-if="$store.state.user.id == 1" :readonly="loading" v-model="type" :items="['Simple', 'Admin']" label="User type" class="input" dense outlined hide-details></v-select>
             <v-text-field :readonly="loading" v-model="username" label="Username" placeholder="username" type="text"  class="input" dense outlined hide-details/>
             <v-text-field :readonly="loading" v-model="pass1" label="Password" placeholder="Password" type="password"  class="input" dense outlined hide-details/>
             <v-text-field :readonly="loading" v-model="pass2" label="Repeat Password" placeholder="Password" type="password" class="input" dense outlined hide-details/>
@@ -24,6 +25,7 @@ export default {
     data:() => ({
         open: false,
         loading: false,
+        type: 'Simple',
         username: '',
         pass1: '',
         pass2: '',
@@ -50,12 +52,14 @@ export default {
 
         save(){
             return DataAgent.editUser('new', {
+                utype: this.type == 'Admin' ? 1 : 2,
                 password: this.pass1.toUpperCase(),
                 username: this.username.toUpperCase()
             });
         },
 
         show(){
+            this.type = 'Simple';
             this.username = '';
             this.pass1 = '';
             this.pass2 = '';

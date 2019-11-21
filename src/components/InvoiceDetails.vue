@@ -25,6 +25,9 @@
         <ServicesForm  readonly
             :items="services" :totals="data" :itemNoPrefix="data.no"
             :gstRate="data.gst_rate" :qstRate="data.qst_rate" />
+            <div class="pa-3 commentBox">
+              <v-text-field :value="comment" label="Comment" placeholder="Empty" class="nup" outlined dense readonly/>
+            </div>
       </v-card-text>
 
       <div style="flex: 1 1 auto;"></div>
@@ -50,6 +53,7 @@ export default {
         open: false,
         data: {},
         services: [],
+        comment: '',
 
         printBtnLoading: false,
         cancelBtnLoading: false,
@@ -59,6 +63,7 @@ export default {
             this.data = data;
             this.open = true;
             this.services = await DataAgent.getInvoiceItems(data.id);
+            this.comment = await DataAgent.getInvoiceComment(data.id);
         },
         printClick(){
             this.printBtnLoading = true;
@@ -91,5 +96,9 @@ export default {
 <style lang="scss" scoped>
 .content  {
     min-height: calc(100% - 64px);
+}
+.commentBox{
+  width: 550px;
+  margin-top: -100px;
 }
 </style>

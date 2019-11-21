@@ -31,7 +31,7 @@ export default new Vuex.Store({
     setting: {
       gstRate: 0.05,
       qstRate: 0.09975,
-      autoFillMake: true,
+      autoFillMake: false,
       billCompany: '',
       billAddress1: '',
       billAddress2: '',

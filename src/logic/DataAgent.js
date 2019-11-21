@@ -54,7 +54,7 @@ export default class DataAgent{
         }
     }
 
-    static async submitInvoice(data, services){
+    static async submitInvoice(data, services, comment){
         Object.keys(data).map(function(key) {
             const val = data[key];
             if(typeof val == 'string'){
@@ -95,7 +95,8 @@ export default class DataAgent{
                 item_no: itemNoPrefix + (i + 1),
                 gst,
                 qst,
-                total
+                total,
+                comment
             };
             sales.push(sale);
         }
@@ -150,6 +151,11 @@ export default class DataAgent{
         return DataManager.db.select('invoice_items', {invoice_id});
     }
 
+    static async getInvoiceComment(invoice_id){
+        const item = await DataManager.db.findOne('sale', {invoice_id});
+        return item ? item.comment : '';
+    }
+
     static async login(username, password){
         const user = await DataManager.db.findOne('user', { username });
         this.store.state.user = user;
@@ -176,7 +182,6 @@ export default class DataAgent{
     static async editUser(userId, data){
         data.password = md5(data.password);
         data.status = 1;
-        data.utype = 2;
         data.date_added = Utils.time();
         if(userId == 'new'){
             const id = await DataManager.db.insert('user', data);

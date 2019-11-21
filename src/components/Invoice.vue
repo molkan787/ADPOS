@@ -1,5 +1,5 @@
 <template>
-    <div id="el-invoice" style="width:1000px">
+    <div style="width:1000px; height: 50%">
         <div :style="s.top" style="width:100%">
             <table :style="s.info">
                 <tr>
@@ -45,7 +45,7 @@
                 </tr>
                 <tr>
                     <td style="text-align: left">DATE: {{ data.date }}</td>
-                    <td>DEALER COPY</td>
+                    <td>{{ copyName }}</td>
                     <td style="text-align: right">INVOICE # {{ data.no }}</td>
                 </tr>
             </table>
@@ -73,7 +73,7 @@
                 </tr>
             </table>
 
-            <table :style="s.table">
+            <table :style="s.table2">
                 <colgroup>
                     <col width="20%">
                     <col width="20%">
@@ -124,6 +124,12 @@ import { mapState } from 'vuex'
 import Utils from '../utils'
 
 export default {
+    props: {
+        ownerCopy: {
+            type: Boolean,
+            default: false,
+        }
+    },
     computed: {
         ...mapState({
             data: state => state.invoice.data,
@@ -131,16 +137,17 @@ export default {
             setting: state => state.setting
         }),
         _gstRate(){ return Utils.round(this.data.gst_rate * 100, 4) + '%' },
-        _qstRate(){ return Utils.round(this.data.qst_rate * 100, 4) + '%' }
+        _qstRate(){ return Utils.round(this.data.qst_rate * 100, 4) + '%' },
+        copyName(){ return this.ownerCopy ? 'AVANTI COPY': 'DEALER COPY' }
     },
     data:() => ({
         s: {
             top: {
-                'font-size': '13px'
+                'font-size': '11px'
             },
             info: {
                 width: '100%',
-                'font-size': '11px'
+                'font-size': '10px'
             },
             header:{
                 width: '100%',
@@ -148,22 +155,27 @@ export default {
                 'font-weight': 'bold'
             },
             title: {
-                'font-size': '15px',
+                'font-size': '12px',
                 padding: '10px'
             },
             table: {
                 width: '100%',
-                'margin-top': '30px',
+                'margin-top': '2px',
+                'border-collapse': 'collapse'
+            },
+            table2: {
+                width: '100%',
+                'margin-top': '10px',
                 'border-collapse': 'collapse'
             },
             boldCell:{
                 border: '1px solid #333',
-                padding: '8px',
+                padding: '2px 8px 2px 8px',
                 'font-weight': 'bold'
             },
             cell:{
                 border: '1px solid #333',
-                padding: '8px'
+                padding: '2px 8px 2px 8px'
             },
             denseCell:{
                 border: '1px solid #333',
@@ -175,23 +187,23 @@ export default {
                 'background-color': '#eee'
             },
             totalsCell: {
-                padding: '2px 8px 2px 8px'
+                padding: '2px 8px 0 8px'
             },
             totalsCellFirstRow: {
-                padding: '20px 8px 2px 8px'
+                padding: '6px 8px 0 8px'
             },
             totalsCellLastRow: {
-                padding: '2px 8px 2px 8px',
+                padding: '2px 8px 0 8px',
                 'font-weight': 'bold'
             },
             totalsLeftCell: {
-                padding: '2px 8px 2px 150px'
+                padding: '2px 8px 0 150px'
             },
             totalsLeftCellFirstRow: {
-                padding: '20px 8px 2px 150px'
+                padding: '6px 8px 0 150px'
             },
             totalsLeftCellLastRow: {
-                padding: '2px 8px 2px 150px',
+                padding: '2px 8px 0 150px',
                 'font-weight': 'bold'
             },
         }

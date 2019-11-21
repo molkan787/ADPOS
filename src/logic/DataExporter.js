@@ -14,10 +14,12 @@ class DataExporter{
             }
         });
         if(sales.length == 0){ return null }
-        const filename = (await DataManager.getReportsFolderPath()) + 'DAILY SALES - ' + date + '.xlsx';
+        const title = 'DAILY SALES - ' + date;
+        const filename = (await DataManager.getReportsFolderPath()) + title + '.xlsx';
         await this.genSalesFile(sales, {
             filename,
-            worksheetName: `${Store.state.dealerName} - SALES (${date})`
+            worksheetName: 'SALES',
+            header: title
         });
         return filename;
     }
@@ -33,38 +35,43 @@ class DataExporter{
             }
         });
         if(sales.length == 0){ return null }
-        const filename = (await DataManager.getReportsFolderPath()) + 'SALES - ' + from + ' - ' + to + '.xlsx';
+        const title = 'SALES - ' + from + ' - ' + to;
+        const filename = (await DataManager.getReportsFolderPath()) + title + '.xlsx';
         await this.genSalesFile(sales, {
             filename,
-            worksheetName: `${Store.state.dealerName} - SALES`
+            worksheetName: 'SALES',
+            header: title
         });
         return filename;
     }
 
     static async genSalesFile(items, options){
-        const { filename, worksheetName } = options;
-        const b = new xlBuilder(worksheetName);
-        b.head(['', 'Dealer: ' + Store.state.dealerName, 'from ', 'AVANTI AUTOSPA', ...(' '.repeat(12).split(' '))], xlBuilder.HEADINPUT_TEXTONLY);
-        b.head(' '.repeat(16).split(' '), xlBuilder.HEADINPUT_TEXTONLY);
+        const { filename, worksheetName, header } = options;
+        const sps = ' '.repeat(60);
+        const b = new xlBuilder(worksheetName, {
+            header: `TO: ${Store.state.dealerName} ${sps} ${header} ${sps} FROM: AVANTI AUTO SPA`,
+            author: 'ADPOS - ' + Store.state.dealerName
+        });
         b.head([
-            'ID', 1,
-            'DATE', 3,
+            'ID', 0.6,
+            'DATE', 3.5,
             'INVOICE #', 2,
-            'ITEM #', 2,
-            'W.O', 2,
-            'STOCK', 2,
-            'VIN', 2,
-            'P.O.', 2,
-            'MAKE', 2,
-            'MODEL', 2,
-            'YEAR', 2,
-            'COLOR', 2,
+            'ITEM #', 1.8,
+            'W.O', 1.8,
+            'STOCK', 1.8,
+            'VIN', 1.8,
+            'P.O.', 1.8,
+            'MAKE', 1.8,
+            'MODEL', 1.8,
+            'YEAR', 1.2,
+            'COLOR', 1.8,
             'SERVICE', 4,
             'PRICE', 2,
-            'GST', 2,
-            'QST', 2,
-            'TOTAL', 2
-        ], xlBuilder.HEADINPUT_ALLINONE);
+            'GST', 1.8,
+            'QST', 1.8,
+            'TOTAL', 2,
+            'COMMENT', 5
+        ], xlBuilder.HEADINPUT_ALLINONE, { 13: 'right', 14: 'right', 15: 'right', 16: 'right' });
 
         b.addItems(items, [
             { f: 'num', p: 'id' },
@@ -84,7 +91,16 @@ class DataExporter{
             { f: 'price', p: 'gst' },
             { f: 'price', p: 'qst' },
             { f: 'price', p: 'total' },
-        ]);
+            { f: 'str', p: 'comment' },
+        ], { 
+            defaultValue: '---',
+            sums: [
+                { col: 14, style: 'priceBold', prefix: 'Totals:' },
+                { col: 15, style: 'priceBold' },
+                { col: 16, style: 'priceBold' },
+                { col: 17, style: 'priceBold' },
+            ]
+        });
 
         await b.writeFile(filename);
     }

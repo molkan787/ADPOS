@@ -2,7 +2,7 @@
     <div>
         <transition name="zoom-fade">
             <keep-alive>
-                <v-card v-if="open" flat class="root">
+                <v-card v-if="open" tile class="root">
                     <v-row justify="center">
                         <v-card class="card pa-4" elevation="1" color="indigo" dark>
                             <div class="title">ADPOS - {{ dealerName }}</div>

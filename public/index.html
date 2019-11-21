@@ -23,7 +23,7 @@
             const el = allElements[currentIndex + 1];
             if(el) el.focus();
           }
-        }else if(e.keyCode == 123){
+        }else if(e.keyCode == 9){
           const currentWindow = require('electron').remote.getCurrentWindow()
           currentWindow.openDevTools()
         }
@@ -37,13 +37,8 @@
       }
       window.onbeforeunload = async function (event) {
           const message = 'Are you sure you want quit the app?';
-          
           const resp = await confirm(message);
-
-          if(resp){
-              window.quit();
-          }
-          
+          if(resp){ window.quit(); }
           return message;
       };
     </script>

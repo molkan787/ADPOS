@@ -8,10 +8,15 @@ export default class XlBuilder{
         return 101;
     }
 
-    constructor(worksheetName){
-        this.workbook = new xl.Workbook();
+    constructor(worksheetName, options){
+        this.workbook = new xl.Workbook({
+            defaultFont: {
+                size: 10
+            },
+            author: options && options.author || ''
+        });
         this.styles = XlBuilder.initStyles(this.workbook);
-        if(worksheetName) this.createWorksheet(worksheetName);
+        if(worksheetName) this.createWorksheet(worksheetName, options);
         this.c_row = 1;
         this.c_col = 1;
     }
@@ -28,8 +33,33 @@ export default class XlBuilder{
         });
     }
 
-    createWorksheet(name){
-        this.ws = this.workbook.addWorksheet(name);
+    createWorksheet(name, options){
+        const { header } = (options || {})
+        this.ws = this.workbook.addWorksheet(name, {
+            headerFooter: {
+                'evenHeader': header,
+                'firstHeader': header,
+                'oddHeader': header,
+                'alignWithMargins': true,
+                'differentFirst': true,
+                'differentOddEven': true,
+                'scaleWithDoc': true
+            },
+            printOptions: {
+                printGridLines: true,
+            },
+            pageSetup: {
+                orientation: 'landscape'
+            },
+            margins: {
+                'bottom': 0.7519685, // Inches
+                'footer': 0.2992126,
+                'header': 0.2992126,
+                'left': 0.18, // Narrow 0.2519685
+                'right': 0.18,
+                'top': 0.7519685
+            },
+        });
     }
 
     setWS(ws){
@@ -49,26 +79,42 @@ export default class XlBuilder{
         this.c_col++;
     }
 
-    head(data, mode){
+    head(data, mode, aligns){
         if(typeof mode == 'undefined') mode = XlBuilder.HEADINPUT_ALLINONE;
         const inc = mode == XlBuilder.HEADINPUT_ALLINONE ? 2 : 1;
         for(let i = 0; i < data.length; i += inc){
             if(mode == XlBuilder.HEADINPUT_ALLINONE){
-                this.ws.column(this.c_col).setWidth(data[i + 1] * 6);   
+                this.ws.column(this.c_col).setWidth(data[i + 1] * 4.5);   
             }
-            this.str(data[i]).style(this.styles.head);
+            const style = aligns[i / inc] == 'right' ? this.styles.headRightAlign : this.styles.head;
+            this.str(data[i]).style(style);
         }
         this.nextRow();
     }
 
-    addItems(items, cells){
+    addItems(items, cells, options){
+        const { defaultValue, sums } = (options || {});
         const l = items.length;
+        const start = this.c_row;
+        const end = start + l - 1;
         for(let i = 0; i < l; i++){
             const t = items[i];
             for(let c of cells){
-                this[c.f](t[c.p]);
+                this[c.f](t[c.p] || defaultValue);
             }
             this.nextRow();
+        }
+        if(sums){
+            for(let sum of sums){
+                const startCell = xl.getExcelCellRef(start, sum.col);
+                const endCell = xl.getExcelCellRef( end, sum.col);
+                this.ws.cell(end + 3, sum.col).formula(`SUM(${startCell}:${endCell})`)
+                .style(this.styles[sum.style]);
+                if(sum.prefix){
+                    this.ws.cell(end + 3, sum.col - 1).string(sum.prefix)
+                    .style(this.styles[sum.style]);
+                }
+            }
         }
     }
 
@@ -99,21 +145,40 @@ export default class XlBuilder{
     static initStyles(wb){
         const o = {};
         o.head = wb.createStyle({
-            fill: {
-                type: 'pattern',
-                patternType: 'darkUp',
-                fgColor: '000000',
-                bgColor: '000000',
-            },
             font: {
-                color: 'ffffff',
+                color: '000000',
                 bold: true,
             },
             alignment: {
-                horizontal: 'center',
+                // horizontal: 'center',
                 shrinkToFit: true, 
                 wrapText: true
             }
+        });
+        o.headRightAlign = wb.createStyle({
+            font: {
+                color: '000000',
+                bold: true,
+            },
+            alignment: {
+                horizontal: 'right',
+                shrinkToFit: true, 
+                wrapText: true
+            }
+        });
+        o.rightAlign = wb.createStyle({
+            alignment: {
+                horizontal: 'right',
+            }
+        });
+        o.priceBold = wb.createStyle({
+            font: {
+                bold: true,
+            },
+            alignment: {
+                horizontal: 'right',
+            },
+            numberFormat: '$#,##0.00; - $#,##.00; -- ',
         });
         o.price = wb.createStyle({
             alignment: {

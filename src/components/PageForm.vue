@@ -8,6 +8,7 @@
             :gstRate="setting.gstRate" :qstRate="setting.qstRate" />
 
             <div class="pa-3 buttons">
+                <v-text-field :readonly="submitLoading" v-model="comment" label="Comment" class="comment-box nup" outlined dense hide-details />
                 <v-btn large color="primary" elevation="1" class="mlb" :loading="submitLoading" @click="submit">
                     <v-icon left>mdi-check</v-icon>
                     PRINT INVOICE
@@ -56,6 +57,7 @@ export default {
     computed: mapState(['setting', 'invoiceCount', 'dealerName']),
     data: () => ({
         submitLoading: false,
+        comment: '',
         carData: {},
         basicInfo: {
             date: '',
@@ -83,6 +85,7 @@ export default {
             this.basicInfo.date = Utils.getDateString(true);
         },
         clear(){
+            this.comment = '';
             this.carData = this.setting.autoFillMake ? {make: this.dealerName } : {};
             this.services = [{},{},{},{},{}];
             this.updateInvoiceNO();
@@ -104,7 +107,8 @@ export default {
             return false;
         },
         async submit(){
-            const services = this.services.filter(i => i.price);
+            const services = this.services.filter(i => i.bk_service_no)
+            .map(i => ({price: i.price, description: i.description, service_no: i.service_no}));
             if(!this.validateForm(services)) return;
             const data = {
                 ...this.totals,
@@ -113,7 +117,7 @@ export default {
             }
             this.submitLoading = true;
             try {
-                const invoice = await DataAgent.submitInvoice(data, services);
+                const invoice = await DataAgent.submitInvoice(data, services, this.comment);
                 await Invoice.print(invoice.data, invoice.services);
                 this.clear();
                 this.resetDate();
@@ -129,11 +133,20 @@ export default {
             const service_no = parseInt(item.service_no);
             const service = this.$dataAgent.getService(service_no);
             if(service){
-                Vue.set(item, 'description', service.description);
-                Vue.set(item, 'price', service.price);
+                if(item.bk_service_no != service_no){
+                    const isCustom = service.price == 0;
+                    Vue.set(item, 'description', service.description);
+                    Vue.set(item, 'isCustom', isCustom);
+                    Vue.set(item, 'price', service.price);
+                    if(isCustom){
+                        Vue.set(item, 'dynamicPrice', this.$options.filters.price(0));
+                    }
+                }
+                Vue.set(item, 'bk_service_no', service_no);
             }else{
                 Vue.set(item, 'description', '');
                 Vue.set(item, 'price', '');
+                Vue.set(item, 'bk_service_no', '');
             }
             this.updateTotals();
         },
@@ -165,7 +178,11 @@ export default {
 .buttons{
     text-align: left;
     width: calc(100% - 400px);
-    margin: -75px 0 20px 0;
+    margin: -115px 0 10px 0;
+}
+.comment-box{
+    width:80% !important;
+    margin-bottom: 10px;
 }
 .carData{
     width: calc(100% - 100px)

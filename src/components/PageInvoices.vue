@@ -8,7 +8,11 @@
       :height="(layout.pageViewHeight - 61) + 'px'"
       class="elevation-1 rounded-corners mtable2"
       @click:row="itemClick"
+      :search="searchValue"
     ></v-data-table>
+    <HeadBarControls>
+      <v-text-field v-model="searchValue" prepend-inner-icon="search" placeholder="Search" class="searchBox" outlined dense dark clearable />
+    </HeadBarControls>
     <InvoiceDetails :data="{}" :services="[]" />
   </div>
 </template>
@@ -17,35 +21,41 @@
 import { mapState } from "vuex";
 import DataAgent from '../logic/DataAgent';
 import InvoiceDetails from './InvoiceDetails';
-import Router from '../struct/router'
+import Router from '../struct/router';
+import HeadBarControls from './HeadBarControls';
 
 export default {
   components: {
-    InvoiceDetails
+    InvoiceDetails,
+    HeadBarControls
   },
   computed: mapState(['layout', 'router']),
   watch: {
       'router.page'(){
-          if(this.router.page == 'Invoices') this.update();
+          if(this.router.page == 'Invoices'){
+            this.searchValue = '';
+            this.update();
+          }
       }
   },
   data() {
     return {
       loading: false,
+      searchValue: '',
       headers: [
         { 
             text: "DATE", value: "date",
             align: "left"
         },
         { text: "NO.", value: "no" },
-        { text: "W.O", value: "wo" },
-        { text: "STOCK", value: "stock", default: '---' },
-        { text: "VIN", value: "vin" },
-        { text: "P.O.", value: "po" },
-        { text: "MAKE", value: "make" },
-        { text: "MODEL", value: "model" },
-        { text: "YEAR", value: "year" },
-        { text: "COLOR", value: "color" },
+        { text: "W.O", value: "wo", filterable: true, default: '---' },
+        { text: "STOCK", value: "stock", filterable: true, default: '---' },
+        { text: "VIN", value: "vin", filterable: true, default: '---' },
+        { text: "P.O.", value: "po", default: '---' },
+        { text: "MAKE", value: "make", default: '---' },
+        { text: "MODEL", value: "model", default: '---' },
+        { text: "YEAR", value: "year", default: '---' },
+        { text: "COLOR", value: "color", default: '---' },
         // { text: "SUB-TOTAL", value: "subtotal" },
         // { text: "GST", value: "gst" },
         // { text: "QST", value: "qst" },
@@ -77,5 +87,12 @@ export default {
 .mtable2 td{
     white-space: nowrap !important;
     cursor: pointer !important;
+}
+.searchBox{
+  width: 300px;
+  float: right;
+  transform: scale(0.9);
+  margin-top: -3px !important;
+  margin-right: -20px !important;
 }
 </style>

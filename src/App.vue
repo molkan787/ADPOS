@@ -10,6 +10,7 @@
       </template>
     </Layout>
     <SalesExporter />
+    <SalesImporter />
     <EditServiceModal />
     <ChangePasswordModal />
     <EditUser />
@@ -17,7 +18,11 @@
     <SetupModal />
     <Dialog />
     <div style="display: none">
-      <Invoice />
+      <div id="el-invoice">
+        <Invoice />
+        <div class="separator"></div>
+        <Invoice ownerCopy />
+      </div>
     </div>
   </v-app>
 </template>
@@ -30,6 +35,7 @@ import Dialog from '@/components/Dialog';
 import Router from '@/components/Router';
 import Invoice from '@/components/Invoice';
 import SalesExporter from '@/components/SalesExporter';
+import SalesImporter from '@/components/SalesImporter';
 import EditServiceModal from '@/components/EditServiceModal';
 import ChangePasswordModal from '@/components/ChangePasswordModal';
 import EditUser from '@/components/EditUser';
@@ -50,10 +56,16 @@ export default {
     ChangePasswordModal,
     EditUser,
     LoginScreen,
-    SetupModal
+    SetupModal,
+    SalesImporter
   }
 }
 </script>
 
 <style lang="scss">
+.separator{
+  width: 100%;
+  border-bottom: 1px dashed #aaa;
+  margin: 20px;
+}
 </style>

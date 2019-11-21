@@ -7,14 +7,13 @@ const app = req('electron').remote.app;
 class DataManager{
 
     static async init(){
-        // const db_file = await this.prepareDBFile();
-        // await this.connectDB(db_file);
         const db_file = this.getDBFilename();
         console.log('db_file:', db_file);
         const exist = await FileExtractor.fileExist(db_file);
         console.log('exist:', exist);
         if(exist){
             await this.connectDB(db_file);
+            await this.handleVersions();
             window.beforeQuit = () => this.close();
             return true;
         }else{
@@ -25,6 +24,15 @@ class DataManager{
                 }
             })
             return false;
+        }
+    }
+
+    static async handleVersions(){
+        const version = (await this.db.query('PRAGMA user_version'))[0].user_version;
+        if(version == 0){
+            await this.db.query("ALTER TABLE sale ADD COLUMN comment TEXT DEFAULT NULL");
+            await this.db.query('PRAGMA user_version = 1');
+            console.log('Updated Database to version 1');
         }
     }
 

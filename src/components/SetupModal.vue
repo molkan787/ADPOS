@@ -47,7 +47,7 @@ export default {
         },
         async end(){
             this.loading = false;
-            await alert('Setup was successfully completed, The software will now reload!\n\nUsername: ADMIN\nPassword: 123456', 'ADPOS');
+            await alert('Setup was successfully completed, The software will now reload!<br><br>Username: ADMIN<br>Password: 123456', 'ADPOS');
             window.onbeforeunload = null;
             window.location.reload();
         }

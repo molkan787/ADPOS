@@ -52,15 +52,25 @@ export default {
         async exportClick(){
             this.loading = true;
             let filename;
-            if(this.rangeType == 'daily'){
-                filename = await DataExporter.exportDailySales();
-            }else{
-                if(Utils.dateCompare(this.dateFrom, this.dateTo)){
-                    alert('Please select a valid date range');
-                    this.loading = false;
-                    return;
+            try {
+                if(this.rangeType == 'daily'){
+                    filename = await DataExporter.exportDailySales();
+                }else{
+                    if(Utils.dateCompare(this.dateFrom, this.dateTo)){
+                        alert('Please select a valid date range');
+                        this.loading = false;
+                        return;
+                    }
+                    filename = await DataExporter.exportDateRangeSales(this.dateFrom, this.dateTo);
                 }
-                filename = await DataExporter.exportDateRangeSales(this.dateFrom, this.dateTo);
+            } catch (error) {
+                if(error.code == 'EBUSY'){
+                    alert('We could not access the file, Please make sure the file is not open on any program.', 'Error')
+                }else{
+                    alert('An error occued.', 'Error');
+                }
+                this.loading = false;
+                return;
             }
             this.loading = false;
             if(!filename){

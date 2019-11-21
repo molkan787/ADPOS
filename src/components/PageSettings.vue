@@ -5,16 +5,9 @@
     </v-tabs>
 
     <v-tabs-items v-model="tab" class="tabs" :style="{height: (viewHeight - 50) + 'px'}">
-      <v-tab-item>
-        <GeneralTab />
-      </v-tab-item>
 
-      <v-tab-item>
-        <ServicesTab />
-      </v-tab-item>
-
-      <v-tab-item>
-        <UsersTab />
+      <v-tab-item v-for="item in items" :key="item">
+        <component :is="item + 'Tab'" />
       </v-tab-item>
 
     </v-tabs-items>
@@ -28,23 +21,28 @@ import UsersTab from './SettingsTabs/Users';
 import { mapState } from 'vuex';
 
 export default {
-  computed: {
-    ...mapState({ 
-      viewHeight: state => state.layout.pageViewHeight,
-      userType: state => state.user.id
-    }),
-    items(){
-      return this.userType > 1 ? ["General", "Services"] : ["General", "Services", "Users"];
-    }
-  },
   components: {
     GeneralTab,
     ServicesTab,
     UsersTab
   },
+  computed: {
+    ...mapState({ 
+      viewHeight: state => state.layout.pageViewHeight,
+      userType: state => state.user.utype
+    }),
+    items(){
+      return this.userType > 1 ? ["Services"] : ["General", "Services", "Users"];
+    }
+  },
   data: () => ({
     tab: 0,
-  })
+  }),
+  watch: {
+    items(){
+      this.tab = 0;
+    }
+  }
 };
 </script>
 

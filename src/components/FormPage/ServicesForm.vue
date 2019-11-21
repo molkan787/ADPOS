@@ -47,7 +47,7 @@
                     dense
                     outlined
                     hide-details
-                    :value="item.price ? (itemNoPrefix + '-' + (index + 1)) : ''"
+                    :value="item.service_no ? (itemNoPrefix + '-' + (index + 1)) : ''"
                     placeholder="Item Invoice ID"
                     readonly
                     required
@@ -66,6 +66,17 @@
             </td>
             <td class="pa-0">
                 <v-text-field
+                    v-if="item.isCustom"
+                    dense
+                    outlined
+                    hide-details
+                    v-model="item.dynamicPrice"
+                    @focus="priceInputFocused(item, $event)"
+                    @blur="priceInputBlured(item, $event)"
+                    placeholder="PRICE"
+                ></v-text-field>
+                <v-text-field
+                    v-else
                     dense
                     outlined
                     hide-details
@@ -147,6 +158,16 @@ export default {
     }
   },
   methods: {
+    priceInputFocused(item, event){
+      event.target.placeholder = item.dynamicPrice;
+      item.dynamicPrice = '';
+    },
+    priceInputBlured(item, event){
+      event.target.placeholder = 'PRICE';
+      const np = item.dynamicPrice ? parseFloat(item.dynamicPrice) : item.price;
+      item.dynamicPrice = this.$options.filters.price(np);
+      item.price = np;
+    },
     itemsChanged(){
       const nos = this.itemsServiceNumbers;
       for(let i = 0; i < this.items.length; i++){
