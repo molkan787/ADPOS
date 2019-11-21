@@ -74,7 +74,7 @@ export default {
             }
         },
         async cancelClick(){
-          if(await confirm('Are you sure you to cancel the invoice?')){
+          if(await confirm('Are you sure you want to cancel the invoice?')){
             this.cancelInvoice();
           }
         },

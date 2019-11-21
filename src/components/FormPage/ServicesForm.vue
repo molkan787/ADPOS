@@ -47,7 +47,7 @@
                     dense
                     outlined
                     hide-details
-                    :value="item.service_no ? (itemNoPrefix + '-' + (index + 1)) : ''"
+                    :value="readonly ? item.item_no : (item.service_no ? (itemNoPrefix + '-' + (index + 1)) : '')"
                     placeholder="Item Invoice ID"
                     readonly
                     required

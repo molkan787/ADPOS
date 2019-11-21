@@ -40,7 +40,7 @@ export default {
   computed: {
     ...mapState(['layout', 'router']),
     total(){
-      return this.items.reduce( (a, c) => a + parseFloat(c.price.substr(1)), 0 );
+      return this.items.reduce( (a, c) => a + Utils.parsePrice(c.price), 0 );
     }
   },
   watch: {

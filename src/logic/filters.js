@@ -7,7 +7,12 @@ export default class Filters{
     }
 
     static price(value){
-        if(typeof value == 'string' && value.charAt(0) == '$') value = value.substr(1);
+        if(typeof value == 'string'){ // same as "Utils.parsePrice()"
+            if(value.charAt(0) == '$')
+                value = value.substr(1);
+            else if(value.substr(0, 3) == '- $')
+                value = '-' + value.substr(3);
+        }
         let val = parseFloat(value);
         if(isNaN(val)) return '';
         const neg = val < 0;

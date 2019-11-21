@@ -26,13 +26,21 @@ export default class DataBase{
         }
     }
 
-    select(table, filters, order){
+    select(table, filters, order, limits){
         let aq = '';
         if(order){
             if(order.desc)
                 aq = `ORDER BY ${order.desc} DESC`;
             else if(order.asc)
                 aq = `ORDER BY ${order.asc} ASC`;
+        }
+        if(limits){
+            aq += ' LIMIT ';
+            if(typeof limits == 'object'){
+                aq += `${limits.start}, ${limits.limit}`;
+            }else{
+                aq += limits;
+            }
         }
         return this.query(`SELECT * FROM ${table}`, null, filters, aq);
     }
@@ -86,6 +94,10 @@ export default class DataBase{
         if(aq){
             q += ' ' + aq;
         }
+        if(window.debug){
+            console.log(q);
+            return [];
+        }
         return this.get(q, finalParams);
     }
 
@@ -117,12 +129,12 @@ export default class DataBase{
             if(!parameters.hasOwnProperty(p)) continue;
             list.push(p);
             const varName = prefix + p;
-            if(query) query += sep;
+            const pv = parameters[p];
+            if(query) query += (typeof pv == 'object' && pv.sep_op) || sep;
             if(skipName){
                 query += varName;
                 params[varName] = parameters[p];
             }else{
-                const pv = parameters[p];
                 if(typeof pv == 'object'){
                     const _p = pv.custom ? pv.custom : p;
                     if(typeof pv.escapeValue == "boolean" && !pv.escapeValue){

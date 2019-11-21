@@ -1,4 +1,5 @@
 import DataManager from './DataManager';
+import DataMonitor from './DataMonitor';
 import Filters from './filters';
 import Utils from '../utils';
 import md5 from 'md5';
@@ -10,7 +11,7 @@ export default class DataAgent{
         this.store = Store;
         this.state = Store.state;
         this.data = Store.state.data;
-
+        DataMonitor.init(Store);
         return DataManager.init();
         // this.initialeLoad();
     }
@@ -19,6 +20,7 @@ export default class DataAgent{
         const invoiceCount = await DataManager.getDailyInvoiceCount();
         this.state.invoiceCount = invoiceCount;
         await this.loadServices();
+        DataMonitor.start();
         for(let cb of this.afterInitCallbacks){
             cb();
         }
@@ -136,8 +138,21 @@ export default class DataAgent{
         return items;
     }
 
-    static async getInvoices(){
-        const items = await DataManager.db.select('invoice', null, {desc: 'id'});
+    static _getSearchFilters(search){
+        if(!search) return null;
+        return {
+            date: { sep_op: ' OR ', op: 'LIKE', val: `%${search}%` },
+            wo: { sep_op: ' OR ', op: 'LIKE', val: `%${search}%` },
+            stock: { sep_op: ' OR ', op: 'LIKE', val: `%${search}%` },
+            vin: { sep_op: ' OR ', op: 'LIKE', val: `%${search}%` },
+            vin: { sep_op: ' OR ', op: 'LIKE', val: `%${search}%` },
+        };
+    }
+
+    static async getInvoices(search, start, limit){
+        let filters = this._getSearchFilters(search);
+        const limits = (typeof start == 'number' && typeof limit == 'number') ? { start, limit } : null;
+        const items = await DataManager.db.select('invoice', filters, {desc: 'id'}, limits);
         items.forEach(i => {
             i.gst = Filters.price(i.gst, 2);
             i.qst = Filters.price(i.qst);
@@ -145,6 +160,16 @@ export default class DataAgent{
             i.total = Filters.price(i.total);
         });
         return items;
+    }
+
+    static async getInvoicesCount(search){
+        let filters = this._getSearchFilters(search);
+        const resp = await DataManager.db.query('SELECT COUNT(*) FROM sale', null, filters);
+        if(resp.length){
+            return resp[0]['COUNT(*)'];
+        }else{
+            return 0;
+        }
     }
 
     static getInvoiceItems(invoice_id){

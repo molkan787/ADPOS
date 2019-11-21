@@ -39,6 +39,13 @@ export default new Vuex.Store({
 
     layout:{
       pageViewHeight: 0,
+    },
+
+    dataMonitor:{
+      progress: 0,
+      notifOpen: false,
+      notifSuccess: false,
+      notifText: 'Correcting data...',
     }
   },
   mutations: {

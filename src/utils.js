@@ -10,6 +10,16 @@ export default class Utils {
     static get DECIMAL_10(){ return 10 }
     static get DECIMAL_5(){ return 5 }
 
+    static parsePrice(value){
+        if(typeof value == 'string'){
+            if(value.charAt(0) == '$')
+                value = value.substr(1);
+            else if(value.substr(0, 3) == '- $')
+                value = '-' + value.substr(3);
+        }
+        return parseFloat(value);
+    }
+
     static encodeFloat(val, decimals){
         return Math.floor(val * Math.pow(10, decimals || this.DECIMAL_5));
     }

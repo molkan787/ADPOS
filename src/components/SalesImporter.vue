@@ -56,6 +56,7 @@ export default {
                 try {
                     await DataImporter.importSales(filename, p => this.progress = Math.round(p));
                     alert('Sales was successfully imported!', 'Data Import');
+                    this.file = null;
                 } catch (error) {
                     console.error(error);
                     alert('An error occued.', 'Error');

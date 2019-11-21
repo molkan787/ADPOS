@@ -14,6 +14,7 @@
     <EditServiceModal />
     <ChangePasswordModal />
     <EditUser />
+    <DataMonitorNotif />
     <LoginScreen />
     <SetupModal />
     <Dialog />
@@ -41,6 +42,7 @@ import ChangePasswordModal from '@/components/ChangePasswordModal';
 import EditUser from '@/components/EditUser';
 import LoginScreen from '@/components/LoginScreen';
 import SetupModal from '@/components/SetupModal';
+import DataMonitorNotif from '@/components/DataMonitorNotif';
 
 export default {
   name: 'app',
@@ -57,7 +59,8 @@ export default {
     EditUser,
     LoginScreen,
     SetupModal,
-    SalesImporter
+    SalesImporter,
+    DataMonitorNotif
   }
 }
 </script>

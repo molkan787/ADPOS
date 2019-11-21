@@ -1,14 +1,17 @@
 <template>
   <div>
     <v-data-table
+      class="elevation-1 rounded-corners mtable2"
+      :height="(layout.pageViewHeight - 61) + 'px'"
       :headers="headers"
       :items="items"
-      :items-per-page="10"
+      :items-per-page="itemsPerPage"
       :loading="loading"
-      :height="(layout.pageViewHeight - 61) + 'px'"
-      class="elevation-1 rounded-corners mtable2"
       @click:row="itemClick"
-      :search="searchValue"
+      :server-items-length="totalItems"
+      :footer-props="{'items-per-page-options': [10, 20, 40, 100]}"
+      @pagination="pagination"
+      :page="currentPage"
     ></v-data-table>
     <HeadBarControls>
       <v-text-field v-model="searchValue" prepend-inner-icon="search" placeholder="Search" class="searchBox" outlined dense dark clearable />
@@ -36,17 +39,21 @@ export default {
             this.searchValue = '';
             this.update();
           }
+      },
+      searchValue(val){
+        this.currentPage = 1;
+        this.update();
       }
   },
   data() {
     return {
       loading: false,
       searchValue: '',
+      itemsPerPage: 10,
+      currentPage: 1,
+      totalItems: 0,
       headers: [
-        { 
-            text: "DATE", value: "date",
-            align: "left"
-        },
+        { text: "DATE", value: "date", align: "left" },
         { text: "NO.", value: "no" },
         { text: "W.O", value: "wo", filterable: true, default: '---' },
         { text: "STOCK", value: "stock", filterable: true, default: '---' },
@@ -65,10 +72,17 @@ export default {
     };
   },
   methods: {
+    pagination(data){
+      this.itemsPerPage = data.itemsPerPage;
+      this.currentPage = data.page;
+      this.update();
+    },
     async update(){
-        this.loading = true;
-        this.items = await DataAgent.getInvoices();
-        this.loading = false;
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      this.loading = true;
+      this.totalItems = await DataAgent.getInvoicesCount(this.searchValue);
+      this.items = await DataAgent.getInvoices(this.searchValue, start, this.itemsPerPage);
+      this.loading = false;
     },
     itemClick(data){
       Router.openModalPage('invoiceDetails', {data});
