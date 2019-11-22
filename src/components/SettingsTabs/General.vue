@@ -24,6 +24,7 @@
                     <v-text-field v-model="mailCC" class="input nup" label="CC" placeholder="user@mail.com" outlined dense hide-details />
                     <v-btn @click="saveClick2" :loading="saveBtnLoading2" class="input" color="primary" elevation="1">Save</v-btn>
                     <v-icon class="success_icon" color="green" :class="{visible: showSuccess2}">check_circle</v-icon>
+                    <v-btn :disabled="!isEmailConfigValid" @click="testEmail" :loading="testBtnLoading" class="input" elevation="1">Send test email</v-btn>
 
                 </v-card>
             </v-col>
@@ -33,10 +34,17 @@
 
 <script>
 import Settings from '../../logic/Settings';
+import ReportsMailer from '../../logic/CronTasks/ReportsMailer';
 import { mapState } from 'vuex';
 
 export default {
-    computed: mapState(['setting']),
+    computed: {
+        ...mapState(['setting']),
+        isEmailConfigValid(){
+            const s = this.setting;
+            return (s.gmailUser && s.gmailPass && s.mailSendTo && true) || false;
+        }
+    },
     data:() => ({
         billCompany: '',
         billAddress1: '',
@@ -53,6 +61,7 @@ export default {
         showSuccess: false,
         saveBtnLoading2: false,
         showSuccess2: false,
+        testBtnLoading: false,
     }),
     watch: {
         setting: {
@@ -63,6 +72,16 @@ export default {
         }
     },
     methods: {
+        async testEmail(){
+            this.testBtnLoading = true;
+            try {
+                await ReportsMailer.doDaily();
+                alert('The test email was successfully sent.', 'Test succeeded!');
+            } catch (error) {
+                alert('The test has failed.', 'Test failed.');
+            }
+            this.testBtnLoading = false;
+        },
         async saveClick(){
             this.saveBtnLoading = true;
             await this.save();
