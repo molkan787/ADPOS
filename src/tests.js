@@ -6,6 +6,10 @@ export default class Tests{
         this.state = Store.state;
         // =====================================
         // this.addDemoServices();
+
+        const d = new Date();
+        d.setDate(20);
+        window.d = d;
     }
 
     static addDemoServices(){

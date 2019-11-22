@@ -118,7 +118,7 @@ export default {
             this.submitLoading = true;
             try {
                 const invoice = await DataAgent.submitInvoice(data, services, this.comment);
-                await Invoice.print(invoice.data, invoice.services);
+                await Invoice.print(invoice.data, invoice.services, this.comment);
                 this.clear();
                 this.resetDate();
             } catch (error) {

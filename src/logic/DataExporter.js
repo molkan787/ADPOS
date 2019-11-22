@@ -5,15 +5,15 @@ import Store from '../store';
 
 class DataExporter{
 
-    static async exportDailySales(){
-        const date = Utils.getDateString();
+    static async exportDailySales(_date){
+        const date = _date ? Utils.getDateString(_date) : Utils.getDateString();
         const sales = await DataManager.db.select('sale', {
             date: {
                 op: 'LIKE',
                 val: date + '%'
             }
         });
-        if(sales.length == 0){ return null }
+        // if(sales.length == 0){ return null }
         const title = 'DAILY SALES - ' + date;
         const filename = (await DataManager.getReportsFolderPath()) + title + '.xlsx';
         await this.genSalesFile(sales, {
@@ -34,7 +34,7 @@ class DataExporter{
                 val: `(${dates})`
             }
         });
-        if(sales.length == 0){ return null }
+        // if(sales.length == 0){ return null }
         const title = 'SALES - ' + from + ' - ' + to;
         const filename = (await DataManager.getReportsFolderPath()) + title + '.xlsx';
         await this.genSalesFile(sales, {

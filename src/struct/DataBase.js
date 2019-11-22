@@ -94,10 +94,6 @@ export default class DataBase{
         if(aq){
             q += ' ' + aq;
         }
-        if(window.debug){
-            console.log(q);
-            return [];
-        }
         return this.get(q, finalParams);
     }
 

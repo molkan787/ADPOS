@@ -7,11 +7,11 @@ export default class Invoice{
         this.invoice = store.state.invoice;
     }
 
-    static print(data, services){
+    static print(data, services, comment){
         return new Promise((resolve, reject) => {
             this.invoice.data = data;
             this.invoice.services = services;
-
+            this.invoice.comment = comment;
             setTimeout(() => {
                 try {
                     printJS({ printable: 'el-invoice', type: 'html', targetStyles: ['*']});

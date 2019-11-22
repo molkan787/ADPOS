@@ -35,12 +35,12 @@
           window.onbeforeunload = null;
           require('electron').remote.app.quit();
       }
-      // window.onbeforeunload = async function (event) {
-      //     const message = 'Are you sure you want quit the app?';
-      //     const resp = await confirm(message);
-      //     if(resp){ window.quit(); }
-      //     return message;
-      // };
+      window.onbeforeunload = async function (event) {
+          const message = 'Are you sure you want quit the app?';
+          const resp = await confirm(message);
+          if(resp){ window.quit(); }
+          return message;
+      };
     </script>
   </head>
   <body>

@@ -1,6 +1,6 @@
 <template>
     <v-card flat color="transparent">
-        <v-text-field :readonly="loading" v-model="username" label="Username" prepend-icon="perm_identity" />
+        <v-text-field :readonly="loading" v-model="username" label="Username" prepend-icon="perm_identity" autofocus />
         <v-text-field :readonly="loading" v-model="password" label="Password" prepend-icon="lock" type="password"/>
         <v-btn :disabled="!formDataValid" :loading="loading" @click="loginClick" elevation="0" class="fluid" color="white" light >Login</v-btn>
         <v-card-subtitle class="credit">AVANTI DEALER POINT OF SALE - CREATED BY JIMMY GEORGIADIS</v-card-subtitle>

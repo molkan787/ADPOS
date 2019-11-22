@@ -142,9 +142,9 @@ export default class DataAgent{
         if(!search) return null;
         return {
             date: { sep_op: ' OR ', op: 'LIKE', val: `%${search}%` },
+            no: { sep_op: ' OR ', op: 'LIKE', val: `%${search}%` },
             wo: { sep_op: ' OR ', op: 'LIKE', val: `%${search}%` },
             stock: { sep_op: ' OR ', op: 'LIKE', val: `%${search}%` },
-            vin: { sep_op: ' OR ', op: 'LIKE', val: `%${search}%` },
             vin: { sep_op: ' OR ', op: 'LIKE', val: `%${search}%` },
         };
     }
@@ -164,7 +164,7 @@ export default class DataAgent{
 
     static async getInvoicesCount(search){
         let filters = this._getSearchFilters(search);
-        const resp = await DataManager.db.query('SELECT COUNT(*) FROM sale', null, filters);
+        const resp = await DataManager.db.query('SELECT COUNT(*) FROM invoice', null, filters);
         if(resp.length){
             return resp[0]['COUNT(*)'];
         }else{

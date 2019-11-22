@@ -25,7 +25,8 @@ export default new Vuex.Store({
     invoiceCount: 0,
     invoice:{
       data: {},
-      services: []
+      services: [],
+      comment: '',
     },
 
     setting: {
@@ -35,6 +36,11 @@ export default new Vuex.Store({
       billCompany: '',
       billAddress1: '',
       billAddress2: '',
+
+      gmailUser: '',
+      gmailPass: '',
+      mailSendTo: '',
+      mailCC: '',
     },
 
     layout:{

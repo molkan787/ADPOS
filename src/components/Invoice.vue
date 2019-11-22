@@ -104,12 +104,12 @@
                     <td :style="s.totalsCell" style="text-align: right">{{ data.gst | price }}</td>
                 </tr>
                 <tr>
-                    <td></td> <td></td>
+                    <td>Comment:</td> <td></td>
                     <td :style="s.totalsLeftCell" style="text-align: left">QST {{ _qstRate }}</td>
                     <td :style="s.totalsCell" style="text-align: right">{{ data.qst | price }}</td>
                 </tr>
                 <tr>
-                    <td></td> <td></td>
+                    <td colspan="2">{{ comment || '---' }}</td>
                     <td :style="s.totalsLeftCellLastRow" style="text-align: left">TOTAL WITH TAXES</td>
                     <td :style="s.totalsCellLastRow" style="text-align: right">{{ data.total | price }}</td>
                 </tr>
@@ -134,6 +134,7 @@ export default {
         ...mapState({
             data: state => state.invoice.data,
             items: state => state.invoice.services,
+            comment: state => state.invoice.comment,
             setting: state => state.setting
         }),
         _gstRate(){ return Utils.round(this.data.gst_rate * 100, 4) + '%' },

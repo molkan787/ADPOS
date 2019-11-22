@@ -16,7 +16,7 @@
           <v-btn dark text @click="printClick" :loading="printBtnLoading">Print</v-btn>
         </v-toolbar-items>
         <v-toolbar-items>
-          <v-btn dark text :disabled="data.status == 3" @click="cancelClick"  :loading="cancelBtnLoading">Cancel &amp; Print</v-btn>
+          <v-btn dark text :disabled="data.status == 3" @click="cancelClick"  :loading="cancelBtnLoading">Cancel Invoice</v-btn>
         </v-toolbar-items>
       </v-toolbar>
       <v-card-text class="content">
@@ -69,7 +69,7 @@ export default {
             this.printBtnLoading = true;
             setTimeout(() => this.printBtnLoading = false, 250);
             try {
-                Invoice.print(this.data, this.services);
+                Invoice.print(this.data, this.services, this.comment);
             } catch (error) {
             }
         },
@@ -84,7 +84,7 @@ export default {
           await DataAgent.cancelInvoice(this.data.id);
           this.data.status = 3;
           setTimeout(() => this.cancelBtnLoading = false, 250);
-          Invoice.print(this.data, this.services);
+          // Invoice.print(this.data, this.services);
         }
     },
     created(){

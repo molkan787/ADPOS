@@ -28,11 +28,22 @@ class DataManager{
     }
 
     static async handleVersions(){
-        const version = (await this.db.query('PRAGMA user_version'))[0].user_version;
+        let version = (await this.db.query('PRAGMA user_version'))[0].user_version;
         if(version == 0){
             await this.db.query("ALTER TABLE sale ADD COLUMN comment TEXT DEFAULT NULL");
             await this.db.query('PRAGMA user_version = 1');
+            version == 1;
             console.log('Updated Database to version 1');
+        }
+        if(version < 2){
+            await this.db.insert('setting', [
+                {key: 'gmailUser', value_type: 2, value: ''},
+                {key: 'gmailPass', value_type: 2, value: ''},
+                {key: 'mailSendTo', value_type: 2, value: ''},
+                {key: 'mailCC', value_type: 2, value: ''},
+            ]);
+            await this.db.query('PRAGMA user_version = 2');
+            console.log('Updated Database to version 2');
         }
     }
 

@@ -32,6 +32,10 @@ export default class Utils {
         return Math.floor(new Date().getTime() / 1000);
     }
 
+    static getHours(){
+        return new Date().getHours();
+    }
+
     static getDateAsInt(){
         const d = new Date();
         let date = d.getFullYear() * 10000;
