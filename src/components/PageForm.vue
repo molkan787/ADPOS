@@ -95,8 +95,6 @@ export default {
             const title = 'Invalid data';
             if(!this.basicInfo.date){
                 alert('You need to select date & time', title);
-            }else if(this.carData.vin && (this.carData.vin.length != 6 || !Utils.isDigitOnly(this.carData.vin))){
-                alert('VIN number must be in 6 digits format ######', title);
             }else if(this.carData.year && (this.carData.year.length != 4 || !Utils.isDigitOnly(this.carData.year))){
                 alert('YEAR must be in 4 digits format 20##', title);
             }else if(services.length < 1){
@@ -110,6 +108,7 @@ export default {
             const services = this.services.filter(i => i.bk_service_no)
             .map(i => ({price: i.price, description: i.description, service_no: i.service_no}));
             if(!this.validateForm(services)) return;
+            this.resetDate();
             const data = {
                 ...this.totals,
                 ...this.carData,
@@ -120,7 +119,6 @@ export default {
                 const invoice = await DataAgent.submitInvoice(data, services, this.comment);
                 await Invoice.print(invoice.data, invoice.services, this.comment);
                 this.clear();
-                this.resetDate();
             } catch (error) {
                 console.error(error)
                 Dialogs.actionError();
@@ -167,6 +165,7 @@ export default {
     },
     created(){
         DataAgent.registerForAfterInit(() => {
+            setInterval(() => this.resetDate(), 30 * 1000);
             this.resetDate();
             this.clear();
         })

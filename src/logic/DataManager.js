@@ -43,7 +43,16 @@ class DataManager{
                 {key: 'mailCC', value_type: 2, value: ''},
             ]);
             await this.db.query('PRAGMA user_version = 2');
+            version == 2;
             console.log('Updated Database to version 2');
+        }
+        if(version < 3){
+            await this.db.insert('setting', [
+                {key: 'mailHeaderPrefix', value_type: 2, value: ''},
+            ]);
+            await this.db.query('PRAGMA user_version = 3');
+            version == 3;
+            console.log('Updated Database to version 3');
         }
     }
 

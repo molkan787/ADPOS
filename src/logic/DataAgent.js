@@ -63,6 +63,7 @@ export default class DataAgent{
                 data[key] = val.toUpperCase();
             }
         });
+        data.date = Utils.formatDate(data.date);
         const time = Utils.time();
         data.added_by = this.state.user.id;
         data.gst_rate = this.state.setting.gstRate;
@@ -146,6 +147,7 @@ export default class DataAgent{
             wo: { sep_op: ' OR ', op: 'LIKE', val: `%${search}%` },
             stock: { sep_op: ' OR ', op: 'LIKE', val: `%${search}%` },
             vin: { sep_op: ' OR ', op: 'LIKE', val: `%${search}%` },
+            po: { sep_op: ' OR ', op: 'LIKE', val: `%${search}%` },
         };
     }
 
@@ -158,6 +160,7 @@ export default class DataAgent{
             i.qst = Filters.price(i.qst);
             i.subtotal = Filters.price(i.subtotal);
             i.total = Filters.price(i.total);
+            i.date = Utils.formatDate(i.date);
         });
         return items;
     }

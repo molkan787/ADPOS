@@ -93,14 +93,17 @@ export default class XlBuilder{
     }
 
     addItems(items, cells, options){
-        const { defaultValue, sums } = (options || {});
+        const { defaultValue, sums, formaters } = (options || {});
         const l = items.length;
         const start = this.c_row;
         const end = start + l - 1;
         for(let i = 0; i < l; i++){
             const t = items[i];
             for(let c of cells){
-                this[c.f](t[c.p] || defaultValue);
+                const f = formaters && formaters[c.p];
+                const d = t[c.p];
+                const fd = (d && f) ? f(d) : d;
+                this[c.f](fd || defaultValue);
             }
             this.nextRow();
         }

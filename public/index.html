@@ -35,18 +35,24 @@
           window.onbeforeunload = null;
           require('electron').remote.app.quit();
       }
+      window.hide = function (){
+          window.onbeforeunload = null;
+          window.VueApp.$destroy();
+          const { ipcRenderer } = require('electron')
+          ipcRenderer.send('hide-window', '-')
+          // require('electron').remote.app.quit();
+      }
       window.onbeforeunload = async function (event) {
           const message = 'Are you sure you want quit the app?';
           const resp = await confirm(message);
-          if(resp){ window.quit(); }
+          if(resp){ window.hide(); }
           return message;
       };
     </script>
   </head>
   <body>
     <noscript>
-      <strong>We're sorry but adpos doesn't work properly without JavaScript
-        enabled. Please enable it to continue.</strong>
+      <strong>Error. NO_JS</strong>
     </noscript>
     <div id="app"></div>
     <!-- built files will be auto injected -->

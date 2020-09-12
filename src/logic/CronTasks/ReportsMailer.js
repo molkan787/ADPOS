@@ -49,7 +49,7 @@ class ReportsMailer {
     // ------------------------------------------------------
     static async doDaily() {
         const date = Utils.getDateString();
-        const file = await DataExporter.exportDailySales(date);
+        const file = await DataExporter.exportDailySales();
         return await this.sendMail(file, date, 'Daily');
     }
 
@@ -69,11 +69,13 @@ class ReportsMailer {
     static sendMail(filename, date, name) {
         return new Promise((resolve, reject) => {
             const setting = store.state.setting;
+            const pre = setting.mailHeaderPrefix ? (setting.mailHeaderPrefix + ' - ') : '';
+            const recipients = setting.mailSendTo.split(',');
             const send = gmailSend({
                 user: setting.gmailUser,
                 pass: setting.gmailPass,
-                to: setting.mailSendTo,
-                subject: `Avanti ${name} Sales Reports - ${date}`,
+                to: recipients,
+                subject: `${pre}Avanti ${name} Sales Reports - ${date}`,
             });
             send({
                 cc: setting.mailCC || undefined,

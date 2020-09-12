@@ -223,7 +223,7 @@ export default {
         }
         &[colspan="3"]{
             font-weight: bold;
-            padding-left: calc(80% - 200px);
+            padding-left: calc(80% - 200px) !important;
         }
     }
 }

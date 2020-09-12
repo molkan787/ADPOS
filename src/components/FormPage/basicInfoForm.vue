@@ -4,8 +4,17 @@
     <v-container class="pa-0-t ma-0">
       <v-row>
         <v-col cols="12" md="4">
-          <v-datetime-picker label="Date" v-model="data.date" :disabled="readonly"
-          :textFieldProps="{dense: true, outlined: true, 'hide-details': true, readonly}"> </v-datetime-picker>
+          <v-text-field
+            dense
+            readonly
+            outlined
+            hide-details
+            v-model="data.date"
+            label="Date"
+            required
+          ></v-text-field>
+          <!-- <v-datetime-picker label="Date" v-model="data.date" :disabled="readonly"
+          :textFieldProps="{dense: true, outlined: true, 'hide-details': true, readonly}"> </v-datetime-picker> -->
         </v-col>
 
         <v-col cols="12" md="4">

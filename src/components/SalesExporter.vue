@@ -56,7 +56,9 @@ export default {
                 if(this.rangeType == 'daily'){
                     filename = await DataExporter.exportDailySales();
                 }else{
-                    if(Utils.dateCompare(this.dateFrom, this.dateTo)){
+                    const notvalid = Utils.dateCompare(this.dateFrom, this.dateTo);
+                    console.log('notvalid', notvalid);
+                    if(notvalid){
                         alert('Please select a valid date range');
                         this.loading = false;
                         return;
@@ -64,6 +66,7 @@ export default {
                     filename = await DataExporter.exportDateRangeSales(this.dateFrom, this.dateTo);
                 }
             } catch (error) {
+                console.error(error);
                 if(error.code == 'EBUSY'){
                     alert('We could not access the file, Please make sure the file is not open on any program.', 'Error')
                 }else{
@@ -86,6 +89,7 @@ export default {
         }
     },
     created(){
+        console.log('SalesExporter')
         this.$router.registerModalPage('salesExporter', () => this.show());
     }
 }

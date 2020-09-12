@@ -62,15 +62,17 @@ export default class Utils {
     }
 
     static getDatesInRange(from, to){
-        if(this.dateCompare(from, to)) return null; // If ending date is greater than starting date return NULL
+        if(this.dateCompare(from, to)) return null; // If starting date is greater than ending date return NULL
         const f = this.dateStrToObject(from);
         const t = this.dateStrToObject(to);
         const result = [];
         while(true){
-            const d = f.year + '-' + ('0' + f.month).substr(-2) + '-' + ('0' + f.day).substr(-2);
-            result.push(d);
+            if(f.day < 32){
+                const d = f.year + '-' + ('0' + f.month).substr(-2) + '-' + ('0' + f.day).substr(-2);
+                result.push(d);
+            }
             f.day++;
-            if(f.day > 31){
+            if(f.day > 32){
                 f.day = 1;
                 f.month++;
             }
@@ -95,6 +97,14 @@ export default class Utils {
             year: parseInt(d[0]),
             month: parseInt(d[1]),
             day: parseInt(d[2])
+        }
+    }
+
+    static formatDate(date){
+        if(isNaN(date)){
+            return date;
+        }else{
+            return this.getDateString(parseFloat(date) / 1000, true);
         }
     }
 

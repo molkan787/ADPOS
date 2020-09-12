@@ -41,6 +41,7 @@ export default new Vuex.Store({
       gmailPass: '',
       mailSendTo: '',
       mailCC: '',
+      mailHeaderPrefix: '',
     },
 
     layout:{

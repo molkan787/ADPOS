@@ -22,6 +22,9 @@
                     <v-divider class="input"></v-divider>
                     <v-text-field v-model="mailSendTo" class="input nup" label="Send to" placeholder="user@mail.com" outlined dense hide-details />
                     <v-text-field v-model="mailCC" class="input nup" label="CC" placeholder="user@mail.com" outlined dense hide-details />
+                    <v-divider class="input"></v-divider>
+                    <v-text-field v-model="mailHeaderPrefix" class="input nup" label="Dealer name" placeholder="name" outlined dense hide-details />
+
                     <v-btn @click="saveClick2" :loading="saveBtnLoading2" class="input" color="primary" elevation="1">Save</v-btn>
                     <v-icon class="success_icon" color="green" :class="{visible: showSuccess2}">check_circle</v-icon>
                     <v-btn :disabled="!isEmailConfigValid" @click="testEmail" :loading="testBtnLoading" class="input" elevation="1">Send test email</v-btn>
@@ -56,6 +59,7 @@ export default {
         gmailPass: '',
         mailSendTo: '',
         mailCC: '',
+        mailHeaderPrefix: '',
 
         saveBtnLoading: false,
         showSuccess: false,
@@ -78,6 +82,7 @@ export default {
                 await ReportsMailer.doDaily();
                 alert('The test email was successfully sent.', 'Test succeeded!');
             } catch (error) {
+                console.error(error);
                 alert('The test has failed.', 'Test failed.');
             }
             this.testBtnLoading = false;
@@ -105,6 +110,7 @@ export default {
             this.saveBtnLoading2 = true;
             await this.save2();
             setTimeout(() => {
+                this.updateLocalMailingData();
                 this.saveBtnLoading2 = false;
                 this.showSuccess2 = true;
                 setTimeout(() => this.showSuccess2 = false, 3000);
@@ -112,25 +118,35 @@ export default {
         },
         save2(){
             const data = {
-                gmailUser: this.gmailUser.trim(),
+                gmailUser: this.gmailUser.replaceAll(' ', ''),
                 gmailPass: this.gmailPass.trim(),
-                mailSendTo: this.mailSendTo.trim(),
-                mailCC: this.mailCC.trim(),
+                mailSendTo: this.mailSendTo.replaceAll(' ', ''),
+                mailCC: this.mailCC.replaceAll(' ', ''),
+                mailHeaderPrefix: this.mailHeaderPrefix.trim(),
             }
             return Settings.edit(data);
         },
         updateLocal(){
+            this.updateLocalBillData();
+            this.updateLocalMailingData();
+        },
+
+        updateLocalBillData(){
             const s = this.setting;
             this.billCompany = s.billCompany;
             this.billAddress1 = s.billAddress1;
             this.billAddress2 = s.billAddress2;
             this.gstRate = s.gstRate;
             this.qstRate = s.qstRate;
-            
+        },
+
+        updateLocalMailingData(){
+            const s = this.setting;
             this.gmailUser = s.gmailUser;
             this.gmailPass = s.gmailPass;
             this.mailSendTo = s.mailSendTo;
             this.mailCC = s.mailCC;
+            this.mailHeaderPrefix = s.mailHeaderPrefix;
         }
     },
 

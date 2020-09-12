@@ -92,7 +92,7 @@ class DataExporter{
             { f: 'price', p: 'qst' },
             { f: 'price', p: 'total' },
             { f: 'str', p: 'comment' },
-        ], { 
+        ], {
             defaultValue: '---',
             sums: [
                 { col: 14, style: 'priceBold', prefix: 'Totals:' },
@@ -108,3 +108,5 @@ class DataExporter{
 }
 window.DataExporter = DataExporter;
 export default DataExporter;
+
+console.log('DataExporter');
