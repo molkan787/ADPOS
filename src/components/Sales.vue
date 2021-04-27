@@ -9,6 +9,10 @@
       class="elevation-1 rounded-corners mtable"
       :footer-props="{'items-per-page-options': [10]}" >
 
+      <template v-slot:[`item.status`]="{ item }">
+        <span>{{ item.status == 3 ? 'CANCELED' : '--' }}</span>
+      </template>
+
       <template slot="footer">
         <div class="text-right pa-3">Total Price: <strong>{{ total | price }}</strong></div> 
       </template>
@@ -40,7 +44,9 @@ export default {
   computed: {
     ...mapState(['layout', 'router']),
     total(){
-      return this.items.reduce( (a, c) => a + Utils.parsePrice(c.price), 0 );
+      return this.items
+              .filter(item => item.status !== 3)
+              .reduce( (a, c) => a + Utils.parsePrice(c.price), 0 );
     }
   },
   watch: {
@@ -77,6 +83,7 @@ export default {
         { text: "GST", value: "gst" },
         { text: "QST", value: "qst" },
         { text: "TOTAL", value: "total" },
+        { text: "STATUS", value: "status" },
       ],
       items: [] 
     };

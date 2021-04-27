@@ -2,7 +2,7 @@ import DataBase from '../struct/DataBase';
 import FileExtractor from '../struct/FileExtractor';
 import Store from '../store';
 const fs = req('fs');
-const app = req('electron').remote.app;
+const app = remote.app;
 
 class DataManager{
 
@@ -12,6 +12,7 @@ class DataManager{
         const exist = await FileExtractor.fileExist(db_file);
         console.log('exist:', exist);
         if(exist){
+            await sleep(500);
             await this.connectDB(db_file);
             await this.handleVersions();
             window.beforeQuit = () => this.close();
@@ -62,8 +63,12 @@ class DataManager{
     }
 
     static async setup(dealerName){
+        console.log('>prepareDBFile')
         const filename = await this.prepareDBFile();
+        await sleep(500);
+        console.log('>connectDB')
         await this.connectDB(filename);
+        console.log('>update')
         await this.db.update('setting', {value: dealerName}, {key: 'dealerName'});
         return true;
     }
@@ -98,9 +103,15 @@ class DataManager{
     }
 
     static async prepareDBFile(){
+        console.log('>prepareFolder')
         await this.prepareFolder(this.getBaseFolderPath());
+        console.log('>getDBFilename')
         const filename = this.getDBFilename();
+        console.log('>fileExist')
         if(! await FileExtractor.fileExist(filename)){
+            console.log('>sleep')
+            await sleep(500);
+            console.log('>extract')
             await FileExtractor.extract('template.db', filename);
         }
         return filename;

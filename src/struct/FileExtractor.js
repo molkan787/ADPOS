@@ -1,5 +1,6 @@
-const app = req('electron').remote.app;
+const app = remote.app;
 const fs = req("fs");
+const path = req("path");
 
 class FileExtractor {
 
@@ -11,12 +12,13 @@ class FileExtractor {
         return new Promise((resolve, reject) => {
             try {
               fs.stat(path, (error, file) => {
+                console.log(file)
                 if (!error && file.isFile()) {
                   return resolve(true);
-                }
-        
-                if (error && error.code === 'ENOENT') {
+                }else if (error && error.code === 'ENOENT') {
                   return resolve(false);
+                }else{
+                  reject(error);
                 }
               });
             } catch (err) {
@@ -27,7 +29,7 @@ class FileExtractor {
 
     static extract(sourceInAsarArchive, destOutsideAsarArchive) {
         return new Promise((resolve, reject) => {
-            fs.copyFile(app.getAppPath() + "/" + sourceInAsarArchive, destOutsideAsarArchive, (err) => {
+            fs.copyFile(path.join(app.getAppPath(), sourceInAsarArchive), destOutsideAsarArchive, (err) => {
                 if (err) {
                     reject(err);
                 }else{

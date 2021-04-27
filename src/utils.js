@@ -147,5 +147,16 @@ export default class Utils {
         return /^\d+$/.test(str);
     }
 
+    static arrayToObjectMap(array, key) {
+        const map = {};
+        const len = array.length;
+        for(let i = 0; i < len; i++) {
+            const item = array[i];
+            map[item[key]] = item;
+        }
+        return map;
+    }
+    
+
 }
 window.utils = Utils;

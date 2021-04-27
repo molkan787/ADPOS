@@ -57,6 +57,11 @@ export default {
       default: false
     }
   },
+  watch: {
+    'data.status'(status){
+      console.log('status', status)
+    }
+  },
   data: () => ({
     valid: false,
     modal: false,

@@ -29,8 +29,11 @@ export default {
         },
         async login(){
             try {
+                console.log('before login')
                 await DataAgent.login(this.username.toUpperCase(), this.password.toUpperCase());
+                console.log('after login')
                 await DataAgent.initialeLoad();
+                console.log('after initialeLoad')
                 this.$store.state.router.page = 'Form';
                 this.$emit('loggedin');
             } catch (error) {
@@ -48,6 +51,15 @@ export default {
         window.clearLoginForm = () => {
             this.username = '';
             this.password = '';
+        }
+    },
+    mounted(){
+        if(DEV){
+            this.username = 'ADMIN';
+            this.password = '123456';
+            setTimeout(() => {
+                this.login();
+            }, 1000)
         }
     }
 }

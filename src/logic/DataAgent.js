@@ -72,6 +72,7 @@ export default class DataAgent{
         data.date_modified = time;
 
         const invID = await DataManager.insertInvoice(data, services);
+        console.log('invID', invID)
         const sharedData = {
             ...Utils.copyObject(data, ['date', 'wo', 'stock', 'vin', 'po', 'make', 'model', 'year', 'color', 'date_added']),
             invoice_id: invID,
@@ -116,7 +117,7 @@ export default class DataAgent{
 
     static async cancelInvoice(invoice_id){
         await DataManager.db.update('invoice', {status: 3}, {id: invoice_id});
-        await DataManager.db.delete('sale', {invoice_id});
+        // await DataManager.db.delete('sale', {invoice_id});
     }
 
     static getDailySales(){
@@ -129,14 +130,18 @@ export default class DataAgent{
     }
 
     static async getSales(filters){
-        const items = await DataManager.db.select('sale', filters, {desc: 'id'});
-        items.forEach(i => {
+        const sales = await DataManager.db.select('sale', filters, {desc: 'id'});
+        const invoices = await DataManager.db.select('invoice', { ...filters, status: 3 });
+        const im = Utils.arrayToObjectMap(invoices, 'no');
+        sales.forEach(i => {
+            const inv = im[i.invoice_no] || {};
+            i.status = inv.status || 1;
             i.gst = Filters.price(i.gst, 2);
             i.qst = Filters.price(i.qst);
             i.price = Filters.price(i.price);
             i.total = Filters.price(i.total);
         });
-        return items;
+        return sales;
     }
 
     static _getSearchFilters(search){
@@ -175,12 +180,12 @@ export default class DataAgent{
         }
     }
 
-    static getInvoiceItems(invoice_id){
-        return DataManager.db.select('invoice_items', {invoice_id});
+    static getInvoiceItems(invoice_no){
+        return DataManager.db.select('invoice_items', { item_no: { op: 'LIKE', val: `${invoice_no}-%` } });
     }
 
-    static async getInvoiceComment(invoice_id){
-        const item = await DataManager.db.findOne('sale', {invoice_id});
+    static async getInvoiceComment(invoice_no){
+        const item = await DataManager.db.findOne('sale', {invoice_no});
         return item ? item.comment : '';
     }
 

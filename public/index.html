@@ -11,6 +11,13 @@
     <link rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/@mdi/font@latest/css/materialdesignicons.min.css">
     <script>
+      const electron = require('electron');
+      const remote = require('electron').remote;
+      window.req = name => name == 'electron' ? electron : remote.require(name);
+      window.remote = remote;
+      const DEV = remote.getGlobal('DEV');
+      const appVersion = remote.getGlobal('version') || 'dev';
+      document.title += ' [' + appVersion + ']';
       window.onkeypress = function(e) {
         if (e.keyCode == 13) {
           event.preventDefault();
@@ -28,7 +35,6 @@
           currentWindow.openDevTools()
         }
       }
-      window.req = name => require(name);
       
       window.quit = function (){
           if(typeof window.beforeQuit == 'function')  window.beforeQuit();
@@ -42,12 +48,14 @@
           ipcRenderer.send('hide-window', '-')
           // require('electron').remote.app.quit();
       }
-      window.onbeforeunload = async function (event) {
+      if(!DEV){
+        window.onbeforeunload = async function (event) {
           const message = 'Are you sure you want quit the app?';
           const resp = await confirm(message);
           if(resp){ window.hide(); }
           return message;
-      };
+        };
+      }
     </script>
   </head>
   <body>

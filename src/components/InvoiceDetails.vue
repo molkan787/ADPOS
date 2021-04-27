@@ -23,11 +23,11 @@
         <BasicInfoForm :data="data" readonly/>
         <CarDataForm :data="data" class="carData" readonly />
         <ServicesForm  readonly
-            :items="services" :totals="data" :itemNoPrefix="data.no"
-            :gstRate="data.gst_rate" :qstRate="data.qst_rate" />
-            <div class="pa-3 commentBox">
-              <v-text-field :value="comment" label="Comment" placeholder="Empty" class="nup" outlined dense readonly/>
-            </div>
+          :items="services" :totals="data" :itemNoPrefix="data.no"
+          :gstRate="data.gst_rate" :qstRate="data.qst_rate" />
+        <div class="pa-3 commentBox">
+          <v-text-field :value="comment" label="Comment" placeholder="Empty" class="nup" outlined dense readonly/>
+        </div>
       </v-card-text>
 
       <div style="flex: 1 1 auto;"></div>
@@ -42,6 +42,7 @@ import ServicesForm from './FormPage/ServicesForm'
 import DataAgent from '../logic/DataAgent'
 import Router from '../struct/router'
 import Invoice from '../logic/invoice'
+import Vue from 'vue'
 
 export default {
     components: {
@@ -62,8 +63,9 @@ export default {
         async show(data){
             this.data = data;
             this.open = true;
-            this.services = await DataAgent.getInvoiceItems(data.id);
-            this.comment = await DataAgent.getInvoiceComment(data.id);
+            this.services = await DataAgent.getInvoiceItems(data.no);
+            this.comment = await DataAgent.getInvoiceComment(data.no);
+            console.log(this.data)
         },
         printClick(){
             this.printBtnLoading = true;
@@ -82,7 +84,7 @@ export default {
         async cancelInvoice(){
           this.cancelBtnLoading = true;
           await DataAgent.cancelInvoice(this.data.id);
-          this.data.status = 3;
+          Vue.set(this.data, 'status', 3);
           setTimeout(() => this.cancelBtnLoading = false, 250);
           // Invoice.print(this.data, this.services);
         }

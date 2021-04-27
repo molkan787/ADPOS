@@ -12,7 +12,11 @@
       :footer-props="{'items-per-page-options': [10, 20, 40, 100]}"
       @pagination="pagination"
       :page="currentPage"
-    ></v-data-table>
+    >
+      <template v-slot:[`item.status`]="{ item }">
+        <span>{{ item.status == 3 ? 'CANCELED' : '--' }}</span>
+      </template>
+    </v-data-table>
     <HeadBarControls>
       <v-text-field v-model="searchValue" prepend-inner-icon="search" placeholder="Search" class="searchBox" outlined dense dark clearable />
     </HeadBarControls>
@@ -67,6 +71,7 @@ export default {
         // { text: "GST", value: "gst" },
         // { text: "QST", value: "qst" },
         { text: "TOTAL", value: "total" },
+        { text: "STATUS", value: "status", default: '---' },
       ],
       items: [] 
     };
@@ -81,7 +86,8 @@ export default {
       const start = (this.currentPage - 1) * this.itemsPerPage;
       this.loading = true;
       this.totalItems = await DataAgent.getInvoicesCount(this.searchValue);
-      this.items = await DataAgent.getInvoices(this.searchValue, start, this.itemsPerPage);
+      const items = await DataAgent.getInvoices(this.searchValue, start, this.itemsPerPage);
+      this.items = items.map(item => ({...item}));
       this.loading = false;
     },
     itemClick(data){

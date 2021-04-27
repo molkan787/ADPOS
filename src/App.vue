@@ -12,7 +12,7 @@
     <SalesExporter />
     <SalesImporter />
     <EditServiceModal />
-    <ChangePasswordModal />
+    <ChangePasswordModal /> 
     <EditUser />
     <DataMonitorNotif />
     <LoginScreen />

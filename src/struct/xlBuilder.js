@@ -103,7 +103,8 @@ export default class XlBuilder{
                 const f = formaters && formaters[c.p];
                 const d = t[c.p];
                 const fd = (d && f) ? f(d) : d;
-                this[c.f](fd || defaultValue);
+                const val = typeof fd == 'number' ? fd : (fd || defaultValue);
+                this[c.f](val);
             }
             this.nextRow();
         }

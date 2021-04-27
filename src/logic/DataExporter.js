@@ -13,10 +13,18 @@ class DataExporter{
                 val: date + '%'
             }
         });
-        // if(sales.length == 0){ return null }
+        const canceledInvoices = await DataManager.db.select('invoice', {
+            date: {
+                op: 'LIKE',
+                val: date + '%'
+            },
+            status: 3
+        });
+        console.log(sales)
+        const items = this.mergeSalesAndCanceledInvoices(sales, canceledInvoices);
         const title = 'DAILY SALES - ' + date;
         const filename = (await DataManager.getReportsFolderPath()) + title + '.xlsx';
-        await this.genSalesFile(sales, {
+        await this.genSalesFile(items, {
             filename,
             worksheetName: 'SALES',
             header: title
@@ -34,10 +42,20 @@ class DataExporter{
                 val: `(${dates})`
             }
         });
-        // if(sales.length == 0){ return null }
+        const canceledInvoices = await DataManager.db.select('invoice', {
+            date: {
+                escapeValue: false,
+                custom: 'substr(date, 0, 11)',
+                op: 'IN',
+                val: `(${dates})`
+            },
+            status: 3
+        });
+        const items = this.mergeSalesAndCanceledInvoices(sales, canceledInvoices);
+        console.log(items);
         const title = 'SALES - ' + from + ' - ' + to;
         const filename = (await DataManager.getReportsFolderPath()) + title + '.xlsx';
-        await this.genSalesFile(sales, {
+        await this.genSalesFile(items, {
             filename,
             worksheetName: 'SALES',
             header: title
@@ -45,11 +63,45 @@ class DataExporter{
         return filename;
     }
 
+    static mergeSalesAndCanceledInvoices(sales, invoices){
+        const im = Utils.arrayToObjectMap(invoices, 'no');
+        const items = [...sales];
+        for(let i = sales.length - 1; i >= 0; i--){
+            const { invoice_no: no } = sales[i];
+            const inv = im[no];
+            if(inv){
+                delete im[no];
+                const { wo, stock, vin, po, make, model, year, color, subtotal, gst, qst, total, date_modified } = inv;
+                const cis = {
+                    id: 1,
+                    date: Utils.getDateString(date_modified, true),
+                    invoice_no: no,
+                    item_no: 'CANCELATION',
+                    wo: wo,
+                    stock: stock,
+                    vin: vin,
+                    po: po,
+                    make: make,
+                    model: model,
+                    year: year,
+                    color: color,
+                    description: 'CANCELATION',
+                    price: -subtotal,
+                    gst: -gst,
+                    qst: -qst,
+                    total: -total,
+                    comment: '',
+                }
+                items.splice(i + 1, 0, cis);
+            }
+        }
+        return items;
+    }
+
     static async genSalesFile(items, options){
         const { filename, worksheetName, header } = options;
-        const sps = ' '.repeat(60);
         const b = new xlBuilder(worksheetName, {
-            header: `TO: ${Store.state.dealerName} ${sps} ${header} ${sps} FROM: AVANTI AUTO SPA`,
+            header: `&LTO: ${Store.state.dealerName} &C${header} &RFROM: AVANTI AUTO SPA&R\nTPS: 762219293 TVQ: 1223960291`,
             author: 'ADPOS - ' + Store.state.dealerName
         });
         b.head([
